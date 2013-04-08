@@ -1,0 +1,30 @@
+{
+  "name": "timePicker",
+  "title": "Timepicker",
+  "description": "A time picker control for textfields built using jQuery. Inspired by Google Calendar.",
+  "version": "0.4.0",
+  "homepage": "http://labs.perifer.se/timedatepicker/",
+  "author": {
+    "name": "Dennis Burke",
+    "email": "dennisburke@prodigy.net"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/ikirudennis/timePicker.git"
+  },
+  "bugs": "https://github.com/ikirudennis/timePicker/issues",
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/ikirudennis/timePicker/blob/master/LICENSE-MIT"
+    },
+    {
+      "type": "GPL",
+      "url": "https://github.com/ikirudennis/timePicker/blob/master/LICENSE-GPL"
+    }
+  ],
+  "dependencies": {
+    "jquery": "*"
+  },
+  "keywords": []
+}

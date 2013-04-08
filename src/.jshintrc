@@ -1,0 +1,21 @@
+{
+  "curly": true,
+  "eqeqeq": true,
+  "immed": true,
+  "latedef": true,
+  "newcap": true,
+  "noarg": true,
+  "noempty": true,
+  "sub": true,
+  "undef": true,
+  "boss": true,
+  "eqnull": true,
+  "bitwise": true,
+  "browser": true,
+  "devel": true,
+  "indent": 2,
+  "plusplus": true,
+  "unused": true,
+  "strict": true,
+  "predef": ["jQuery"]
+}

@@ -2,6 +2,8 @@ timePicker
 ==========
 A time picker control for textfields built using jQuery. Inspired by Google Calendar.
 
+Compatible with jQuery 1.3 - 2.0beta
+
 Examples
 --------
 

@@ -142,6 +142,7 @@
       if (!tpOver) {
         $tpDiv.hide();
       }
+      $(this).val( sanitizeTimeString($(this).val()));
     });
     // Keypress doesn't repeat on Safari for non-text keys.
     // Keydown doesn't repeat on Firefox and Opera on Mac.
@@ -265,7 +266,7 @@
     var h = time.getHours();
     var hours = settings.show24Hours ? h : (((h + 11) % 12) + 1);
     var minutes = time.getMinutes();
-    return formatNumber(hours) + settings.separator + formatNumber(minutes) + (settings.show24Hours ? '' : ((h < 12) ? ' AM' : ' PM'));
+    return formatNumber(hours) + settings.separator + formatNumber(minutes) + (settings.show24Hours ? '' : ((h < 12) ? ' am' : ' pm'));
   }
 
   function formatNumber(value) {
@@ -278,16 +279,17 @@
 
   function timeStringToDate(input, settings) {
     if (input) {
+      input = sanitizeTimeString(input);
       var array = input.split(settings.separator);
       var hours = parseFloat(array[0]);
       var minutes = parseFloat(array[1]);
 
       // Convert AM/PM hour to 24-hour format.
       if (!settings.show24Hours) {
-        if (hours === 12 && input.indexOf('AM') !== -1) {
+        if (hours === 12 && input.indexOf('am') !== -1) {
           hours = 0;
         }
-        else if (hours !== 12 && input.indexOf('PM') !== -1) {
+        else if (hours !== 12 && input.indexOf('pm') !== -1) {
           hours += 12;
         }
       }
@@ -304,4 +306,25 @@
     time.setDate(0);
     return time;
   }
+  
+  function sanitizeTimeString(sTime) {
+    var m, s, t, v;
+    if (sTime) {
+      s = sTime.toLowerCase().replace(/\s*/g, '');
+      if (t = /^(\d{1,2})(a|p)m*$/.exec(s)) {
+        if (!(parseInt(t[1]) > 12)) {
+          return "" + t[1] + ":00" + t[2] + "m";
+        }
+      } else if (v = /^(\d{1,2}):(\d{1,2})(a|p)m*$/.exec(s)) {
+        if (!(parseInt(v[1]) > 12 || parseInt(v[2]) > 59)) {
+          return "" + v[1] + ":" + v[2] + v[3] + "m";
+        }
+      } else if (m = /^(\d{1,2}):(\d{1,2})$/.exec(s)) {
+        if (!(parseInt(m[1]) > 24 || parseInt(m[2]) > 59)) {
+          return "" + m[1] + ":" + m[2];
+        }
+      }
+    }
+  };
+  
 })(jQuery);

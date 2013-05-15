@@ -26,7 +26,51 @@ test('instantiate in 12-hour format', function () {
   ok(_$('#id_timepicker').timePicker({show24Hours: false}), '12-hour ' +
     'timepicker');
   // not all browsers have a string.endsWith method, but they all handle regex.
-  ok(/AM$/.test(_$('div.time-picker li:first').text()), 'shows am/pm');
+  ok(/am$/.test(_$('div.time-picker li:first').text()), 'shows am/pm');
+});
+
+test('given 1 PM sanitizeTimeString should return 1:00pm', function () {
+  "use strict";
+  expect(2);
+  strictEqual(_$('#id_timepicker').val(), '', 'initially empty');
+  _$('#id_timepicker').timePicker({show24Hours: false}).val('1 PM').blur();
+  strictEqual(_$('#id_timepicker').val(), '1:00pm', 'populated with proper ' +
+    'data');
+});
+
+test('given 11 a sanitizeTimeString should return 11:00am', function () {
+  "use strict";
+  expect(2);
+  strictEqual(_$('#id_timepicker').val(), '', 'initially empty');
+  _$('#id_timepicker').timePicker({show24Hours: false}).val('11 a').blur();
+  strictEqual(_$('#id_timepicker').val(), '11:00am', 'populated with proper ' +
+    'data');
+});
+
+test('given 10:3  pm  sanitizeTimeString should return 10:30pm', function () {
+  "use strict";
+  expect(2);
+  strictEqual(_$('#id_timepicker').val(), '', 'initially empty');
+  _$('#id_timepicker').timePicker({show24Hours: false}).val('10:3  pm').blur();
+  strictEqual(_$('#id_timepicker').val(), '10:30pm', 'populated with proper ' +
+    'data');
+});
+
+test('given 13:30  pm  sanitizeTimeString should return 1:30pm', function () {
+  "use strict";
+  expect(2);
+  strictEqual(_$('#id_timepicker').val(), '', 'initially empty');
+  _$('#id_timepicker').timePicker({show24Hours: false}).val('13:30').blur();
+  strictEqual(_$('#id_timepicker').val(), '1:30pm', 'populated with proper ' +
+    'data');
+});
+
+test('instantiate defaultSelected should have 10:30 option selected', function () {
+  "use strict";
+  expect(2);
+  strictEqual(_$('#id_timepicker').val(), '', 'initially empty');
+  _$('#id_timepicker').timePicker({defaultSelected: new Date(0, 0, 0, 10, 30, 0)}).focus();
+  equal(_$('div.time-picker li.selected:first').text(), '10:30', 'selects list using defaultSelected option');
 });
 
 test('instantiate with specified separator', function () {

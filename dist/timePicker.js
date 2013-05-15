@@ -1,4 +1,4 @@
-/*! Timepicker - v0.4.0 - 2013-01-30
+/*! Timepicker - v0.4.0 - 2013-05-15
 * http://labs.perifer.se/timedatepicker/
 * Copyright (c) 2013 Dennis Burke; Licensed MIT, GPL */
 (function ($) {
@@ -41,6 +41,8 @@
     var keyDown = false;
     var startTime = timeToDate(settings.startTime, settings);
     var endTime = timeToDate(settings.endTime, settings);
+    // add default time
+    var defaultSelected = settings.defaultSelected ? timeToDate(settings.defaultSelected, settings) : startTime;
     var selectedClass = "selected";
     var selectedSelector = "li." + selectedClass;
     var divid = 'tp' + new Date().getTime();
@@ -102,7 +104,7 @@
       $tpDiv.show();
 
       // Try to find a time in the list that matches the entered time.
-      var time = elm.value ? timeStringToDate(elm.value, settings) : startTime;
+      var time = elm.value ? timeStringToDate(elm.value, settings) : defaultSelected;
       var startMin = startTime.getHours() * 60 + startTime.getMinutes();
       var min = (time.getHours() * 60 + time.getMinutes()) - startMin;
       var steps = Math.round(min / settings.step);
@@ -125,6 +127,7 @@
       if (!tpOver) {
         $tpDiv.hide();
       }
+      $(this).val(sanitizeTimeString($(this).val(), settings));
     });
     // Keypress doesn't repeat on Safari for non-text keys.
     // Keydown doesn't repeat on Firefox and Opera on Mac.
@@ -225,6 +228,7 @@
     step: 30,
     startTime: new Date(0, 0, 0, 0, 0, 0),
     endTime: new Date(0, 0, 0, 23, 30, 0),
+    defaultSelected: null,
     separator: ':',
     show24Hours: true
   };
@@ -248,7 +252,7 @@
     var h = time.getHours();
     var hours = settings.show24Hours ? h : (((h + 11) % 12) + 1);
     var minutes = time.getMinutes();
-    return formatNumber(hours) + settings.separator + formatNumber(minutes) + (settings.show24Hours ? '' : ((h < 12) ? ' AM' : ' PM'));
+    return formatNumber(hours) + settings.separator + formatNumber(minutes) + (settings.show24Hours ? '' : ((h < 12) ? ' am' : ' pm'));
   }
 
   function formatNumber(value) {
@@ -261,16 +265,17 @@
 
   function timeStringToDate(input, settings) {
     if (input) {
+      input = sanitizeTimeString(input, settings);
       var array = input.split(settings.separator);
       var hours = parseFloat(array[0]);
       var minutes = parseFloat(array[1]);
 
       // Convert AM/PM hour to 24-hour format.
       if (!settings.show24Hours) {
-        if (hours === 12 && input.indexOf('AM') !== -1) {
+        if (hours === 12 && input.indexOf('am') !== -1) {
           hours = 0;
         }
-        else if (hours !== 12 && input.indexOf('PM') !== -1) {
+        else if (hours !== 12 && input.indexOf('pm') !== -1) {
           hours += 12;
         }
       }
@@ -287,4 +292,50 @@
     time.setDate(0);
     return time;
   }
+  
+  function sanitizeTimeString(sTime, settings) {
+    var t, s, v, hours, minutes, ampm;
+    
+    //skip if using 24hours
+    if (settings.show24Hours) {
+      return sTime;
+    }
+    
+    if (sTime) {
+      s = sTime.toLowerCase().replace(/\s*/g, '');
+      
+      //time strings in format of 1pm
+      if (t = /^(\d{1,2})(a|p)m*$/.exec(s)) {
+        if ((parseInt(t[1], 10) < 12)) {
+          return "" + t[1] + ":00" + t[2] + "m";
+        }
+      
+      //time strings in format of 10:30pm
+      } else if (v = /^(\d{1,2}):(\d{1,2})(a|p)m*$/.exec(s)) {
+        hours   = parseInt(v[1], 10);
+        minutes = parseInt(v[2], 10);
+        ampm    = v[3] + "m";
+        if ( hours < 12 || minutes < 59) {
+          return "" + hours + ":" + ( minutes >= 10 ? minutes : minutes + '0' ) + ampm;
+        }
+      
+      //time string in format of 13:00
+      } else if (v = /^(\d{1,2}):(\d{1,2})$/.exec(s)) {
+        hours   = parseInt(v[1], 10);
+        minutes = parseInt(v[2], 10);
+        ampm    = 'am';
+        if (hours <= 24 && minutes <= 59) {
+          if (hours >= 12) {
+            hours = hours-12;
+            ampm = "pm";
+          }
+          if (hours === 0) {
+            hours = 12;
+          }
+          return hours + ':' + minutes + ampm;
+        }
+      }
+    }
+  }
+  
 })(jQuery);
